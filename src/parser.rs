@@ -32,13 +32,13 @@ impl JSONParser {
     pub fn parse(&mut self) {
         match self.input.next() {
             Some(Token::LeftBrace) => {
-                self.state = JSONParserState::Object(self.parse_object());
+                self.state = self.parse_object();
             }
             _ => panic!("Unexpected start of object")
         }
     }
     
-    fn parse_object(&mut self) -> HashMap<String, JSONParserState> {
+    fn parse_object(&mut self) -> JSONParserState {
         let mut obj = HashMap::new();
 
         while match self.input.peek().unwrap() {
@@ -70,10 +70,15 @@ impl JSONParser {
             obj.insert(key, value);
         }
 
-        obj
+        JSONParserState::Object(obj)
     }
 
     fn parse_value(&mut self) -> JSONParserState {
-        JSONParserState::Number(42)
+        match self.input.next().unwrap() {
+            Token::String(s) => JSONParserState::String(s),
+            Token::Number(n) => JSONParserState::Number(n),
+            Token::LeftBrace => self.parse_object(),
+            _ => JSONParserState::Number(0),
+        }
     }
 }
