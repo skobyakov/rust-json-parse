@@ -1,6 +1,5 @@
 use std::str::Chars;
 use std::iter::Peekable;
-
 #[derive(Debug)]
 pub enum Token {
     RightBrace,
